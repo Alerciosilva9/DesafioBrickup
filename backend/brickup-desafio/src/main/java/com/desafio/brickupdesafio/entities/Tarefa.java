@@ -1,6 +1,7 @@
 package com.desafio.brickupdesafio.entities;
 
 import com.desafio.brickupdesafio.enums.STATUS;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Type;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
@@ -12,12 +13,9 @@ public class Tarefa {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @ManyToOne
-    @JoinColumn(name = "status")
-    private Status status;
+    //@Enumerated(EnumType.STRING)
+    private String status;
     private String descricao;
-
-    private byte[] imagem;
 
     public long getId() {
         return id;
@@ -27,11 +25,11 @@ public class Tarefa {
         this.id = id;
     }
 
-    public Status getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(Status status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
@@ -43,11 +41,5 @@ public class Tarefa {
         this.descricao = descricao;
     }
 
-    public byte[] getImagem() {
-        return imagem;
-    }
 
-    public void setImagem(byte[] imagem) {
-        this.imagem = imagem;
-    }
 }
