@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Space, Button, Tag, Modal, message, Empty } from 'antd';
-import { EditOutlined, DeleteOutlined, PictureOutlined, ProfileOutlined, InboxOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, PictureOutlined, UnorderedListOutlined, InboxOutlined } from '@ant-design/icons';
 import { connect } from 'react-redux';
-import { fetchTasks, deleteTask, markTaskCompleted } from '../redux/actions/actions'
+import { fetchTasks, deleteTask, markTaskCompleted } from '../actions/taskActions';
+import EditTaskModal from './EditTaskModal';
 
-const Tarefas = ({ tasks, error, fetchTasks, deleteTask, markTaskCompleted }) => {
+const TaskList = ({ tasks, error, fetchTasks, deleteTask, markTaskCompleted }) => {
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [viewImageModalVisible, setViewImageModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState('');
@@ -17,8 +18,8 @@ const Tarefas = ({ tasks, error, fetchTasks, deleteTask, markTaskCompleted }) =>
   const dataSource = tasks
     ? tasks.map((task) => ({
       key: task.id,
-      task: task.title,
-      status: task.completed ? 'Concluído' : 'Pendente',
+      task: task.descricao,
+      status: task.status,
       image: task.photoPath, 
     }))
     : [];
@@ -34,42 +35,37 @@ const Tarefas = ({ tasks, error, fetchTasks, deleteTask, markTaskCompleted }) =>
       dataIndex: 'status',
       key: 'status',
       render: (status) => (
-        <Tag color={status === 'Concluído' ? 'green' : 'orange'}>
+        <Tag color={status === 'CONCLUIDO' ? 'green' : 'orange'}>
           {status}
         </Tag>
       ),
     },
     {
-      title: 'Imagem',
       key: 'image',
       render: (_, record) => (
         <Button
           icon={<PictureOutlined />}
-          onClick={() => handleViewImage(record.image)}
+          onClick={() => handleViewImage(`http://localhost:8080/tarefas/${record.key}/imagem`)}
         >
-          Ver Imagem
+          Ver
         </Button>
       ),
     },
     {
-      title: 'Ações',
       key: 'actions',
       render: (_, record) => (
         <Space size="middle">
           <Button type="primary" icon={<EditOutlined />} onClick={() => handleEditTask(record.key)}>
-            Editar
-          </Button>
-          <Button type="danger" icon={<DeleteOutlined />} onClick={() => handleDelete(record.key)}>
-            Excluir
           </Button>
           <Button
             onClick={() => handleComplete(record.key, record.status === 'Concluído')}
             style={{
-              backgroundColor: record.status === 'Concluído' ? 'green' : null,
-              color: record.status === 'Concluído' ? 'white' : null,
+              left:'50px',
+              backgroundColor: record.status === 'CONCLUIDO' ? 'Chartreuse' : null,
+              color: record.status === 'CONLCUIDO' ? 'white' : null,
             }}
           >
-            {record.status === 'Concluído' ? 'Concluído' : 'Concluir'}
+            {record.status === 'CONCLUIDO' ? 'Concluído' : 'Concluir'}
           </Button>
         </Space>
       ),
@@ -79,18 +75,6 @@ const Tarefas = ({ tasks, error, fetchTasks, deleteTask, markTaskCompleted }) =>
   const handleEditTask = (key) => {
     setEditModalVisible(true);
     setSelectedTaskKey(key);
-  };
-
-  const handleDelete = async (key) => {
-    try {
-      await deleteTask(key);
-      message.success('Tarefa excluída com sucesso!');
-      setTimeout(() => {
-        fetchTasks();
-      }, 500);
-    } catch (error) {
-      message.error('Erro ao excluir tarefa.');
-    }
   };
 
   const handleComplete = (key, isCompleted) => {
@@ -129,15 +113,15 @@ const Tarefas = ({ tasks, error, fetchTasks, deleteTask, markTaskCompleted }) =>
       {dataSource.length === 0 ? (
         <Empty
           image={<InboxOutlined style={{ marginTop: '33px', fontSize: 60, color: '#000000E0 ' }} />}
-          description={<span>Não há tarefas para mostrar.</span>}
+          description={<span>Não há tarefas </span>}
         />
       ) : (
         <Table
           dataSource={dataSource}
           columns={columns}
           bordered
-          title={() => <h2 style={{ fontSize: '25px' }}>Lista de Tarefas  <ProfileOutlined /></h2>}
-          pagination={{ pageSize: 5 }}
+          title={() => <h2 style={{ fontSize: '25px' }}>Tarefas<UnorderedListOutlined /> </h2>}
+          pagination={{ pageSize: 4 }}
           style={{ backgroundColor: '#fff', borderRadius: '8px' }}
         />
       )}
@@ -147,10 +131,13 @@ const Tarefas = ({ tasks, error, fetchTasks, deleteTask, markTaskCompleted }) =>
         footer={null}
         width={800}
       >
-        {selectedImage && <img src={`data:image/png;base64,${selectedImage}`} alt="Imagem da Tarefa" style={{ width: '100%', height: '100%' }} />}
+        {selectedImage && <img src={selectedImage} alt="Imagem da Tarefa" style={{ width: '80%', height: '100%' }} />}
       </Modal>
-
-     
+      <EditTaskModal
+        visible={editModalVisible}
+        onCancel={closeEditModal}
+        taskKey={selectedTaskKey}
+      />
     </>
   );
 };
@@ -166,4 +153,4 @@ const mapDispatchToProps = (dispatch) => ({
   markTaskCompleted: (taskId) => dispatch(markTaskCompleted(taskId)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Tarefas);
+export default connect(mapStateToProps, mapDispatchToProps)(TaskList);

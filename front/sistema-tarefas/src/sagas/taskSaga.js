@@ -21,7 +21,7 @@ const API_BASE_URL = 'http://localhost:8080';
 
 const fetchTasksFromApi = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/tasks`);
+    const response = await fetch(`${API_BASE_URL}/tarefas`);
     const data = await response.json();
     console.log("data", data)
     return data;
@@ -34,21 +34,34 @@ const fetchTasksFromApi = async () => {
 const addTaskToApi = async (task) => {
 
   try {
-    const formData = new FormData();
-
-    formData.append('title', task.title);
-    formData.append('completed', task.completed);
-    formData.append('photoPath', task.photoPath);
-
-    const response = await fetch(`${API_BASE_URL}/tasks/tasks`, {
+    const response = await fetch(`${API_BASE_URL}/tarefas`, {
       method: 'POST',
-      body: formData,
-    });
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(
+        { 
+          descricao: task.title,
+          status: task.completed? "CONCLUIDO" : "PENDENTE"
+      }
+      )
+    }
+    )
+    const data = new FormData()
+    data.append("file",task.photoPath)
+    const responseBody = await response.json()
+
+    const response2 = await fetch(`${API_BASE_URL}/tarefas/${responseBody.id}/imagem`, {
+      method: 'POST',
+      body: data
+    }
+    )
     return response; 
   } catch (error) {
-    console.error('Error adding task:', error);
+    console.error('Error ao adicionar tarefa', error);
     throw error;
   }
+  
 };
 
 
@@ -84,7 +97,7 @@ const updateTaskToApi = async (task) => {
 
 const deleteTaskFromApi = async (taskId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`, {
+    const response = await fetch(`${API_BASE_URL}/tarefas/${taskId}`, {
       method: 'DELETE',
     });
     const data = await response.json();
@@ -97,13 +110,14 @@ const deleteTaskFromApi = async (taskId) => {
 
 const markTaskCompletedInApi = async (taskId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/tasks/modifyStatus/${taskId}`, {
-      method: 'POST',
+    const response = await fetch(`${API_BASE_URL}/tarefas/${taskId}/concluir`, {
+      method: 'GET',
     });
     const data = await response.json();
+    console.log(response)
     return data;
   } catch (error) {
-    console.error('Error marking task as completed:', error);
+    console.error('Não foi possivel concluir a  tarefa:', error);
     throw error;
   }
 };
