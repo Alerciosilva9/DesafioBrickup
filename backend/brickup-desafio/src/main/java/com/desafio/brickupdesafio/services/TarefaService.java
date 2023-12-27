@@ -32,8 +32,8 @@ public class TarefaService {
         Optional<Tarefa> antiga = tarefaRepository.findById(id);
         if(antiga.isPresent()){
             Tarefa tf = antiga.get();
-            tf.setStatus(tarefa.getStatus());
-            tf.setDescricao(tarefa.getDescricao());
+            if(tarefa.getDescricao()!=null)tf.setDescricao(tarefa.getDescricao());
+            if(tarefa.getStatus()!=null)tf.setStatus(tarefa.getStatus());
             return tarefaRepository.save(tf);
         }
         return null;
