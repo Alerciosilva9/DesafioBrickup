@@ -68,21 +68,22 @@ const addTaskToApi = async (task) => {
 const updateTaskToApi = async (task) => {
   console.log("title: ", task.title)
   console.log("completed: ", task.completed)
-  console.log("photoPath: ", task.photoPath)
-  console.log("id: ", task.id)
+
 
   try {
     const formData = new FormData();
 
-    formData.append('title', task.title);
-    formData.append('completed', task.completed);
-    formData.append('photoPath', task.photoPath);
-
-    console.log("data UPDATE", formData);
-
-    const response = await fetch(`${API_BASE_URL}/tasks/${task.id}`, {
+    const response = await fetch(`${API_BASE_URL}/tarefas/${task.id}`, {
       method: 'PUT',
-      body: formData,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(
+        { 
+          descricao: task.title,
+          status: task.completed? "CONCLUIDO" : "PENDENTE"
+      }
+      )
     });
 
     console.log("data UPDATE", response);

@@ -22,19 +22,18 @@ const EditTaskModal = ({ taskKey, visible, onCancel, updateTask, fetchTasks }) =
       antdMessage.error('O título não pode ter mais de 40 caracteres.');
       return;
     }
-
+    /*
     if (!fileList.length) {
       antdMessage.error('Por favor, inclua uma imagem.');
       return;
-    }
+    }*/
 
-    const file = fileList[0].originFileObj;
+    //const file = fileList[0].originFileObj;
 
     const taskData = {
       id: taskKey,
       title: title,
       completed: status,
-      photoPath: file,
     };
 
     try {
@@ -103,16 +102,6 @@ const EditTaskModal = ({ taskKey, visible, onCancel, updateTask, fetchTasks }) =
         <Option value="Pendente">Pendente</Option>
         <Option value="Concluído">Concluído</Option>
       </Select>
-
-      {/* Upload de Imagem */}
-      <Upload
-        maxCount={1}
-        listType="picture"
-        accept="image/*"
-        {...uploadProps}
-      >
-        <Button icon={<UploadOutlined />}>Carregar Imagem</Button>
-      </Upload>
     </Modal>
   );
 };
