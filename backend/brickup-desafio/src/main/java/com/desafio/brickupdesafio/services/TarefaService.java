@@ -1,5 +1,6 @@
 package com.desafio.brickupdesafio.services;
 
+import com.desafio.brickupdesafio.dtos.TarefaDTO;
 import com.desafio.brickupdesafio.entities.Imagem;
 import com.desafio.brickupdesafio.entities.Tarefa;
 import com.desafio.brickupdesafio.repositories.ImagemRepository;
@@ -10,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TarefaService {
@@ -18,13 +20,13 @@ public class TarefaService {
     @Autowired
     private ImagemRepository imgRepo;
 
-    public List<Tarefa> buscarTodos(){
-        return tarefaRepository.findAll();
+    public List<TarefaDTO> buscarTodos(){
+        return tarefaRepository.findAll().stream().map(x->new TarefaDTO(x)).collect(Collectors.toList());
     }
 
 
-    public Tarefa criarTarefa(Tarefa nova){
-        return tarefaRepository.save(nova);
+    public TarefaDTO criarTarefa(TarefaDTO nova){
+        return new TarefaDTO(tarefaRepository.save(new Tarefa(nova)));
     }
 
 
@@ -39,10 +41,10 @@ public class TarefaService {
         return null;
     }
 
-    public Tarefa buscarTarefa(long id){
+    public TarefaDTO buscarTarefa(long id){
         Optional<Tarefa> task = tarefaRepository.findById(id);
         if(task.isPresent()){
-            return task.get();
+            return new TarefaDTO(task.get());
         }
         return null;
     }
@@ -66,7 +68,7 @@ public class TarefaService {
             img.setImagem(file.getBytes());
             img.setTarefa(task.get());
             imgRepo.save(img);
-            return "Imagem Cadastradas";
+            return "Imagem Cadastrada";
         }
         return null;
     }

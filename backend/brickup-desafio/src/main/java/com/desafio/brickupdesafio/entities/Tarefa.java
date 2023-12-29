@@ -1,5 +1,6 @@
 package com.desafio.brickupdesafio.entities;
 
+import com.desafio.brickupdesafio.dtos.TarefaDTO;
 import com.desafio.brickupdesafio.enums.STATUS;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
@@ -13,9 +14,18 @@ public class Tarefa {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    //@Enumerated(EnumType.STRING)
     private String status;
     private String descricao;
+
+    public Tarefa(){}
+
+
+    public Tarefa(TarefaDTO dto){
+        this.id = dto.getId();
+        this.status = dto.getStatus();
+        this.descricao = dto.getDescricao();
+    }
+
 
     public long getId() {
         return id;
@@ -40,6 +50,8 @@ public class Tarefa {
     public void setDescricao(String descricao) {
         this.descricao = descricao;
     }
+
+
 
 
 }

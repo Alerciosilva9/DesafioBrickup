@@ -1,10 +1,12 @@
 package com.desafio.brickupdesafio.controllers;
 
+import com.desafio.brickupdesafio.dtos.TarefaDTO;
 import com.desafio.brickupdesafio.entities.Imagem;
 import com.desafio.brickupdesafio.entities.Tarefa;
 import com.desafio.brickupdesafio.repositories.ImagemRepository;
 import com.desafio.brickupdesafio.repositories.TarefaRepository;
 import com.desafio.brickupdesafio.services.TarefaService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,12 +25,12 @@ public class TarefaController {
     @Autowired
     TarefaService service;
     @GetMapping()
-    public List<Tarefa> findAll(){
+    public List<TarefaDTO> findAll(){
         return service.buscarTodos();
     }
 
     @PostMapping()
-    public ResponseEntity<Tarefa> create(@RequestBody Tarefa nova){
+    public ResponseEntity<TarefaDTO> create(@Valid @RequestBody TarefaDTO nova){
         return ResponseEntity.ok(service.criarTarefa(nova));
     }
 
@@ -41,8 +43,8 @@ public class TarefaController {
         return ResponseEntity.notFound().build();
     }
     @GetMapping("/{id}")
-    public ResponseEntity<Tarefa> buscarTarefaporId(@PathVariable long id){
-        Tarefa task = service.buscarTarefa(id);
+    public ResponseEntity<TarefaDTO> buscarTarefaporId(@PathVariable long id){
+        TarefaDTO task = service.buscarTarefa(id);
         if(task!=null){
             return ResponseEntity.ok(task);
         }
